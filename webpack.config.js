@@ -10,6 +10,7 @@ const config = {
 
   },
   mode: process.env.NODE_ENV,
+  devtool:"eval-source-map",
   optimization: {
     minimize: false
   },

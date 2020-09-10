@@ -1,61 +1,4 @@
 const RENDER_TO_DOM = Symbol("render to dom");
-class ElementWrapper {
-  constructor(type) {
-    /**
-     * 创建的实体dom 放到一个属性上
-     */
-    this.root = document.createElement(type);
-    // console.log(this.root)
-    // <div>abc</div>
-    // <div>123</div>
-    // <h1>my component</h1>
-    // <div class="wrapper"><h1>my component</h1><div>abc</div><div>123</div></div>
-  }
-  setAttribute(name, value) {
-    /**
-     * 处理事件
-     * reg 匹配 所有字符 所有空白和所有非空白，可以匹配所有字符 */
-    if (name.match(/^on([\s\S]+)$/)) {
-      this.root.addEventListener(RegExp.$1.replace(/^[\s\S]/, c => c.toLowerCase()), value);
-    } else {
-      if (name === 'className') {
-        this.root.setAttribute("class", value);
-      }
-      this.root.setAttribute(name, value)
-    }
-
-  }
-  appendChild(component) {
-    let range = document.createRange();
-    /*append child 是 append 进去的一定是在最后的*/
-    range.setStart(this.root, this.root.childNodes.length);
-    range.setEnd(this.root, this.root.childNodes.length);
-    // console.log(component)
-    component[RENDER_TO_DOM](range);
-    // this.root.appendChild(component.root)
-  }
-  [RENDER_TO_DOM](range) {
-    /**删掉内容 */
-    range.deleteContents();
-    /**插入内容 */
-    range.insertNode(this.root);
-  }
-}
-class TextWrapper {
-  /**
-   * 文本节点没有attr属性不必 setattr
-   */
-  constructor(content) {
-    this.root = document.createTextNode(content);
-  }
-  [RENDER_TO_DOM](range) {
-
-    /**删掉内容 */
-    range.deleteContents();
-    /**插入内容 */
-    range.insertNode(this.root);
-  }
-}
 export class Component {
   constructor() {
     this.props = Object.create(null);
@@ -72,6 +15,9 @@ export class Component {
   }
   appendChild(component) {
     this.children.push(component);
+  }
+  get vdom() {
+    return this.render().vdom;
   }
   /**range api */
   [RENDER_TO_DOM](range) {
@@ -128,6 +74,83 @@ export class Component {
   //   return this._root;
   // }
 }
+class ElementWrapper extends Component {
+  constructor(type) {
+    super(type);
+    this.type = type;
+    /**
+     * 创建的实体dom 放到一个属性上
+     */
+    this.root = document.createElement(type);
+    // console.log(this.root)
+    // <div>abc</div>
+    // <div>123</div>
+    // <h1>my component</h1>
+    // <div class="wrapper"><h1>my component</h1><div>abc</div><div>123</div></div>
+  }
+  // setAttribute(name, value) {
+  //   /**
+  //    * 处理事件
+  //    * reg 匹配 所有字符 所有空白和所有非空白，可以匹配所有字符 */
+  //   if (name.match(/^on([\s\S]+)$/)) {
+  //     this.root.addEventListener(RegExp.$1.replace(/^[\s\S]/, c => c.toLowerCase()), value);
+  //   } else {
+  //     if (name === 'className') {
+  //       this.root.setAttribute("class", value);
+  //     }
+  //     this.root.setAttribute(name, value)
+  //   }
+
+  // }
+  // appendChild(component) {
+  //   let range = document.createRange();
+  //   /*append child 是 append 进去的一定是在最后的*/
+  //   range.setStart(this.root, this.root.childNodes.length);
+  //   range.setEnd(this.root, this.root.childNodes.length);
+  //   // console.log(component)
+  //   component[RENDER_TO_DOM](range);
+  //   // this.root.appendChild(component.root)
+  // }
+  get vdom() {
+    return {
+      type: this.type,
+      props: this.props,
+      children: this.children.map(child => child.vdom)
+    }
+  }
+
+  [RENDER_TO_DOM](range) {
+    /**删掉内容 */
+    range.deleteContents();
+    /**插入内容 */
+    range.insertNode(this.root);
+  }
+}
+class TextWrapper extends Component {
+
+  /**
+   * 文本节点没有attr属性不必 setattr
+   */
+  constructor(content) {
+    super(content);
+    this.content = content;
+    this.root = document.createTextNode(content)
+  }
+  get vdom() {
+    return {
+      type: "#text",
+      content: this.content
+    }
+  }
+  [RENDER_TO_DOM](range) {
+
+    /**删掉内容 */
+    range.deleteContents();
+    /**插入内容 */
+    range.insertNode(this.root);
+  }
+}
+
 /**
  *
  * var a = createElement("div", {

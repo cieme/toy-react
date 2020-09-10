@@ -18,6 +18,9 @@ class ElementWrapper {
     if (name.match(/^on([\s\S]+)$/)) {
       this.root.addEventListener(RegExp.$1.replace(/^[\s\S]/, c => c.toLowerCase()), value);
     } else {
+      if (name === 'className') {
+        this.root.setAttribute("class", value);
+      }
       this.root.setAttribute(name, value)
     }
 
@@ -78,31 +81,41 @@ export class Component {
   }
   /**重新绘制 */
   rerender() {
+    /* 先保存 老的 range */
+    let oldRange = this._range;
+    /**创建 新的 range 把他设置为 老 range 的 start */
+    /* bug 为了保证 range 不空 需要先插入 */
+    let range = document.createRange();
+    range.setStart(oldRange.startContainer, oldRange.startOffset)
+    range.setEnd(oldRange.startContainer, oldRange.startOffset);
+    /* 老 range 的 start 挪到插入的内容之后 */
+    this[RENDER_TO_DOM](range);
+    oldRange.setStart(range.endContainer, range.endOffset);
     /**全删掉 */
-    this._range.deleteContents();
+    oldRange.deleteContents();
     /**渲染 */
-    this[RENDER_TO_DOM](this._range);
+    // this[RENDER_TO_DOM](this._range);
   }
-  // setState(newState) {
-  //   if (this.state === null || typeof this.state !== "object") {
-  //     this.state = newState;
-  //     this.rerender();
-  //     return;
-  //   }
-  //   /**递归调用 遍历所有属性 深拷贝 */
-  //   let merge = (oldState, newState) => {
-  //     for (let p in newState) {
-  //       /**如果是空 那么 直接赋值上去 */
-  //       if (oldState[p] === null || typeof oldState[p] !== "object") {
-  //         oldState[p] = newState[p];
-  //       } else {
-  //         merge(oldState[p], newState[p]);
-  //       }
-  //     }
-  //   }
-  //   merge(this.state, newState);
-  //   this.rerender();
-  // }
+  setState(newState) {
+    if (this.state === null || typeof this.state !== "object") {
+      this.state = newState;
+      this.rerender();
+      return;
+    }
+    /**递归调用 遍历所有属性 深拷贝 */
+    let merge = (oldState, newState) => {
+      for (let p in newState) {
+        /**如果是空 那么 直接赋值上去 */
+        if (oldState[p] === null || typeof oldState[p] !== "object") {
+          oldState[p] = newState[p];
+        } else {
+          merge(oldState[p], newState[p]);
+        }
+      }
+    }
+    merge(this.state, newState);
+    this.rerender();
+  }
   // get root() {
   //   /* 如果没有 root */
   //   if (!this._root) {

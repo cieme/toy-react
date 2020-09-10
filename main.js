@@ -1,31 +1,75 @@
 import './src/index.scss'
 import { createElement, Component, render } from './toy-react'
-/* 如果没有一个行为，那么应该有一个默认行为 所以需要继承 */
-class Mycomponent extends Component {
-  constructor() {
-    super();
+class Square extends Component {
+  constructor(props) {
+    super(props);
     this.state = {
-      a: 'aaaa',
-      b: 123,
-      c: 321,
-    }
+      value: null,
+    };
   }
+
   render() {
-    return <section class='wrapper'>
-      <h1>my component</h1>
-      {/* <button onclick={() => { this.setState({ c: this.state.c + 1 }) }}>BUTTON ADDHANDLE</button> */}
-      <button onclick={() => {this.rerender()}}>BUTTON ADDHANDLE</button>
-      {/* <h5>{JSON.stringify(this.state)}</h5> */}
-      {/* <h5>{"123"}</h5> */}
-      <h5>a:-----{this.state.a}</h5>
-      <h5>b:-----{this.state.b}</h5>
-      <h5>c:-----{this.state.c}</h5>
-      {this.children}
-    </section >
+    return (
+      <button
+        className="square"
+        onClick={() => this.setState({ value: 'X' })}
+      >
+        {this.state.value}
+      </button>
+    );
   }
 }
 
-render(<Mycomponent id='a' class='c' >
-  <h2>皮卡丘</h2>
-  <h3>123</h3>
-</Mycomponent>, document.body)
+class Board extends Component {
+  renderSquare(i) {
+    return <Square />;
+  }
+
+  render() {
+    const status = 'Next player: X';
+
+    return (
+      <div>
+        <div className="status">{status}</div>
+        <div className="board-row">
+          {this.renderSquare(0)}
+          {this.renderSquare(1)}
+          {this.renderSquare(2)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(3)}
+          {this.renderSquare(4)}
+          {this.renderSquare(5)}
+        </div>
+        <div className="board-row">
+          {this.renderSquare(6)}
+          {this.renderSquare(7)}
+          {this.renderSquare(8)}
+        </div>
+      </div>
+    );
+  }
+}
+
+class Game extends Component {
+  render() {
+    return (
+      <div className="game">
+        <div className="game-board">
+          <Board />
+        </div>
+        <div className="game-info">
+          <div>{/* status */}</div>
+          <ol>{/* TODO */}</ol>
+        </div>
+      </div>
+    );
+  }
+}
+
+// ========================================
+
+render(
+  <Game />,
+  document.getElementById('root')
+);

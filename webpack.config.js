@@ -24,7 +24,7 @@ const config = {
       }, {
         loader: 'css-loader',
         options: {
-          modules: true,
+          modules: false,
         }
       }, {
         loader: 'sass-loader'

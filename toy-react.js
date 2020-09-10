@@ -83,26 +83,26 @@ export class Component {
     /**渲染 */
     this[RENDER_TO_DOM](this._range);
   }
-  setState(newState) {
-    if (this.state === null || typeof this.state !== "object") {
-      this.state = newState;
-      this.rerender();
-      return;
-    }
-    /**递归调用 遍历所有属性 深拷贝 */
-    let merge = (oldState, newState) => {
-      for (let p in newState) {
-        /**如果是空 那么 直接赋值上去 */
-        if (oldState[p] === null || typeof oldState[p] !== "object") {
-          oldState[p] = newState[p];
-        } else {
-          merge(oldState[p], newState[p]);
-        }
-      }
-    }
-    merge(this.state, newState);
-    this.rerender();
-  }
+  // setState(newState) {
+  //   if (this.state === null || typeof this.state !== "object") {
+  //     this.state = newState;
+  //     this.rerender();
+  //     return;
+  //   }
+  //   /**递归调用 遍历所有属性 深拷贝 */
+  //   let merge = (oldState, newState) => {
+  //     for (let p in newState) {
+  //       /**如果是空 那么 直接赋值上去 */
+  //       if (oldState[p] === null || typeof oldState[p] !== "object") {
+  //         oldState[p] = newState[p];
+  //       } else {
+  //         merge(oldState[p], newState[p]);
+  //       }
+  //     }
+  //   }
+  //   merge(this.state, newState);
+  //   this.rerender();
+  // }
   // get root() {
   //   /* 如果没有 root */
   //   if (!this._root) {

@@ -13,8 +13,8 @@ class Mycomponent extends Component {
   render() {
     return <section class='wrapper'>
       <h1>my component</h1>
-      <button onclick={() => { this.setState({ c: this.state.c + 1 }) }}>BUTTON ADDHANDLE</button>
-      <button onclick={() => { this.setState({ b: this.state.b + 1 }) }}>BUTTON ADDHANDLE</button>
+      {/* <button onclick={() => { this.setState({ c: this.state.c + 1 }) }}>BUTTON ADDHANDLE</button> */}
+      <button onclick={() => {this.rerender()}}>BUTTON ADDHANDLE</button>
       {/* <h5>{JSON.stringify(this.state)}</h5> */}
       {/* <h5>{"123"}</h5> */}
       <h5>a:-----{this.state.a}</h5>

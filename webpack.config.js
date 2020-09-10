@@ -8,7 +8,7 @@ const config = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'dist.js',
-    publicPath: './',
+    publicPath: '',
 
   },
   mode: process.env.NODE_ENV,
@@ -41,14 +41,15 @@ const config = {
     }]
   },
   plugins: [new HtmlWebpackPlugin({
-    title: "TOY REACT",
+    title: "toy react",
     template: path.resolve(__dirname, 'public/index.html'),
-    inject: 'head'
+    inject: 'body'
   })]
 };
 if (process.env.NODE_ENV === 'development') {
   config.devServer = {
     contentBase: path.join(__dirname, 'dist'),
+    publicPath: '',
     compress: true,
     port: 9000,
     overlay: {
@@ -56,7 +57,6 @@ if (process.env.NODE_ENV === 'development') {
       errors: true
     },
     open: true,
-    // openPage: ['public/index.html']
   }
   config.plugins.push(new webpack.HotModuleReplacementPlugin())
 }
